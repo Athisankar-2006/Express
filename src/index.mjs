@@ -90,9 +90,79 @@ app.get("/api/products/:id",(req,res)=>{
     return res.status(400).send({msg:"user not found"})
 })
 
+
+app.use(express.json())
+
+
+
+
+app.post("/api/users",(req, res)=>{
+    console.log(req.body);
+    const{body}=req;
+    const NewUser={id: users[users.length-1].id+1, ...body};
+    users.push(NewUser)
+    return res.status(201).send(NewUser);
+})
+
+
 app.listen(port,()=>{
     console.log(`app is running on port ${port}`);
 })
 
+app.put("/api/users/:id",(req,res)=>{
+
+    const id= parseInt(req.params.id);
+    console.log(id);
+    if(isNaN(id)){
+       return res.status(400).send({msg:'bad request invaild id'})
+    }
+    const userIndex=users.find((user)=>user.id === id);
+    if(userIndex === -1){
+        return res.status(400).send({msg:"user not found"})
+    }
+    const {body}=req;
+    users[userIndex]={id:id, ...body}
+    return res.status(200).send({msg:"user updated"});
+    
+
+})
+
+
+app.patch("/api/users/:id",(req,res)=>{
+    const id= parseInt(req.params.id);
+    console.log(id);
+    if(isNaN(id)){
+       return res.status(400).send({msg:'bad request invaild id'})
+    }
+    const userIndex=users.find((user)=>user.id === id);
+    if(userIndex === -1){
+        return res.status(400).send({msg:"user not found"})
+    }
+    const {body} =req;
+    users[userIndex]={...users[userIndex], ...body};
+    res.sendStatus(200);
+
+})
+
+app.delete("/api/users/:id",(req,res)=>{
+   const id= parseInt(req.params.id);
+    console.log(id);
+    if(isNaN(id)){
+       return res.status(400).send({msg:'bad request invaild id'})
+    }
+    const userIndex=users.find((user)=>user.id === id);
+    if(userIndex === -1){
+        return res.status(400).send({msg:"user not found"})
+    }
+
+    users.splice(userIndex,1)
+    res.sendStatus(200)
+
+})
+
 
 // local host 3000/users?filter=user_name&value=go
+
+//thunder client extention installled
+
+// put- update (complete update)
