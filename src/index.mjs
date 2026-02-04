@@ -28,8 +28,6 @@ const usersp=[
 ]
 
 
-
-
 const productsP=[
 {id:1, product_name:"apple"},
 {id:2, product_name:"linux"},
@@ -39,7 +37,32 @@ const productsP=[
 
 ]
 
+const getuIndexById=(req,res,next)=>{
+    const id=parseInt(req.params.id);
+   if(isNaN(id)){
+      return res.status(400).send({msg:"it is not a number"})
+   }
 
+   const userindex=usersp.findIndex((user)=>user.id===id);
+   if(userindex === -1){
+      return res.status(404).send({msg:"user not found"})
+   }
+   req.userindex=userindex;
+   next();
+}
+
+
+const getuid=(req,res,next)=>{
+    // console.log(req.params.id)
+    const id=parseInt(req.params.id);
+   if(isNaN(id)){
+      return res.status(400).send({msg:"it is not a number"})
+   }
+   
+   req.id=id;
+
+   next();
+}
 
 app.get("/api/users",(req,res)=>{
 
@@ -66,13 +89,21 @@ app.get("/api/productsp",(req,res)=>{
 
 
 
-app.get("/api/productsp/:id",(req,res)=>{
-    // console.log(req.params.id)
-    const id=parseInt(req.params.id);
-   if(isNaN(id)){
-      return res.status(400).send({msg:"it is not a number"})
-   }
+app.get("/api/productsp/:id",getuid,(req,res)=>{
+    
+  const id=req.id;
 
+   const user=usersp.find((user)=>user.id===id);
+   if(user){
+      return res.send(user)
+   }
+   return res.send({msg:"user not found"})
+})
+
+
+app.get("/api/users/:id",getuid,(req,res)=>{
+    
+  const id=req.id;
    const user=usersp.find((user)=>user.id===id);
    if(user){
       return res.send(user)
@@ -95,6 +126,54 @@ app.get("/api/productsP/:id",(req,res)=>{
    }
    return res.send({msg:"user not found"})
 })
+
+app.use(express.json())
+
+app.post("/api/users",(req,res)=>{
+   
+    const {body}=req;
+    const newuser={id:usersp[usersp.length-1].id+1, ...body};
+
+    console.log(newuser);
+    usersp.push(newuser);
+    
+    return res.status(201).send(newuser);
+})
+
+
+
+app.put("/api/users/:id",getuIndexById,(req, res)=>{
+  const userindex=req.userindex;
+   const {body} = req;
+
+   usersp[userindex]= {id: id, ...body};
+   return res.status(201).send({msg: "user updated"})
+   
+})
+
+
+
+app.patch("/api/users/:id",getuIndexById,(req,res)=>{
+   const userindex=req.userindex;
+   const {body} = req;
+   usersp[userindex]={...usersp[userindex], ...body}
+    return res.sendStatus(200);
+ 
+})
+
+
+app.delete("/api/users/:id",getuIndexById, (req,res)=>{
+  const userindex=req.userindex;
+   usersp.splice(userindex,1);
+   res.sendStatus(200);
+
+})
+
+
+
+
+
+
 
 
 
