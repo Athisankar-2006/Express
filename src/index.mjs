@@ -1,10 +1,22 @@
 import express from "express";
-
-import routes from "./routes/router.mjs"
+import routes from "./routes/router.mjs";
+import cookieParser from "cookie-parser";
+import session from "express-session";
 
 const app =express();
 
-app.use(express.json())
+app.use(express.json());
+app.use(cookieParser("this is  will used for encrypt"));
+app.use(
+    session({
+        secret: "this is secret",
+        saveUninitialized: false,
+        resave:false,
+        cookie: {
+            maxAge: 6000 *60,
+        }
+
+}));
 app.use(routes);
 
 
@@ -13,23 +25,10 @@ const port=3000;
 
 
 
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
 app.get("/",(req,res)=>{
-    // res.cookie("thisIsKey","thisIsValue",{maxAge: 60000})
+    res.cookie("user","admin",{maxAge: 60000 *60, signed:true})
+    console.log(req.session);
+    console.log(req.session.id);
     res.send({msg: "Root"})
 });
 
@@ -38,9 +37,4 @@ app.get("/",(req,res)=>{
 app.listen(port,()=>{
     console.log(`app is running on port ${port}`);
 })
-
-
-// local host 3000/users?filter=user_name&value=go
-
-//thunder client extention installled
 

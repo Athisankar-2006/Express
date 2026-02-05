@@ -18,3 +18,6 @@ export const products = [
 {id:6, product_name: "iq"},
 {id:7, product_name: "redmi"}
 ]
+
+
+export default users;

@@ -9,25 +9,32 @@ import {validationResult,matchedData,checkSchema} from "express-validator";
 const router = Router();
 
 
-const users = [
-{id:1, user_name: "sankar"},
-{id:2, user_name: "athi"},
-{id:3, user_name: "spider"},
-{id:4, user_name: "kumar"},
-{id:5, user_name: "peter"},
-{id:6, user_name: "iron man"},
-{id:7, user_name: "enjoy"}
-]
+// const users = [
+// {id:1, user_name: "sankar"},
+// {id:2, user_name: "athi"},
+// {id:3, user_name: "spider"},
+// {id:4, user_name: "kumar"},
+// {id:5, user_name: "peter"},
+// {id:6, user_name: "iron man"},
+// {id:7, user_name: "enjoy"},
+// ];
 
 
 
 router.get("/api/users",(req,res)=>{
+
+    console.log(req.signedCookies.cookies); 
+    if(req.signedCookies.cookies.user && req.cookies.user === "Admin"){
     const {query:{filter,value}}=req;
     console.log(filter,value);
     if(filter && value){
       return res.send(users.filter((user)=>user[filter].toLowerCase().includes(value)))  
     }
-   
+    return res.send(users); 
+    }
+    else{
+        return res.send({msg: "you are not an admin"})
+    }
     res.send(users);
 })
 
@@ -62,7 +69,7 @@ router.post("/api/users",checkSchema(createUserValidationSchema),
 
 
 router.put("/api/users/:id",getUserIndexById,(req,res)=>{
-
+//    const id = req.params.id;
     const userIndex=req.userIndex
     const {body}=req;
     users[userIndex]={id:id, ...body}
