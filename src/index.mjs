@@ -1,13 +1,12 @@
 import express from "express";
-// import productsRouter from "./routes/products.mjs"
-// import usersRouter from "./routes/users.mjs"
-// import { getParamsId,getUserIndexById } from "./utils/middlewares.mjs";
+
+import routes from "./routes/router.mjs"
 
 const app =express();
 
-// app.use(express.json())
-// app.use(usersRouter);
-// app.use(productsRouter)
+app.use(express.json())
+app.use(routes);
+
 
 
 const port=3000;
@@ -17,160 +16,7 @@ const port=3000;
 
 
 
-
-const usersp=[
-{id:1, user_name:"Athi"},
-{id:2, user_name:"spider man"},
-{id:3, user_name:"bad man"},
-{id:4, user_name:"iron man"},
-{id:5, user_name:"super man"}
-
-]
-
-
-const productsP=[
-{id:1, product_name:"apple"},
-{id:2, product_name:"linux"},
-{id:3, product_name:"kali"},
-{id:4, product_name:"window"},
-{id:5, product_name:"ios"}
-
-]
-
-const getuIndexById=(req,res,next)=>{
-    const id=parseInt(req.params.id);
-   if(isNaN(id)){
-      return res.status(400).send({msg:"it is not a number"})
-   }
-
-   const userindex=usersp.findIndex((user)=>user.id===id);
-   if(userindex === -1){
-      return res.status(404).send({msg:"user not found"})
-   }
-   req.userindex=userindex;
-   next();
-}
-
-
-const getuid=(req,res,next)=>{
-    // console.log(req.params.id)
-    const id=parseInt(req.params.id);
-   if(isNaN(id)){
-      return res.status(400).send({msg:"it is not a number"})
-   }
-   
-   req.id=id;
-
-   next();
-}
-
-app.get("/api/users",(req,res)=>{
-
-    const {query:{filter,value}} =req;
-
-    if(filter&& value){
-        return res.send(usersp.filter(((user)=>user[filter].toLowerCase().includes(value))))
-    }
-    res.send(usersp);
-
-})
-
-
-app.get("/api/productsp",(req,res)=>{
-
-    const {query:{filter,value}} =req;
-
-    if(filter&& value){
-        return res.send(productsP.filter(((product)=>product[filter].toLowerCase().includes(value))))
-    }
-    res.send(productsP);
-
-})
-
-
-
-app.get("/api/productsp/:id",getuid,(req,res)=>{
-    
-  const id=req.id;
-
-   const user=usersp.find((user)=>user.id===id);
-   if(user){
-      return res.send(user)
-   }
-   return res.send({msg:"user not found"})
-})
-
-
-app.get("/api/users/:id",getuid,(req,res)=>{
-    
-  const id=req.id;
-   const user=usersp.find((user)=>user.id===id);
-   if(user){
-      return res.send(user)
-   }
-   return res.send({msg:"user not found"})
-})
-
-
-
-app.get("/api/productsP/:id",(req,res)=>{
-    // console.log(req.params.id)
-    const id=parseInt(req.params.id);
-   if(isNaN(id)){
-      return res.status(400).send({msg:"it is not a number"})
-   }
-
-   const product=productsP.find((user)=>product.id===id);
-   if(user){
-      return res.send(product)
-   }
-   return res.send({msg:"user not found"})
-})
-
-app.use(express.json())
-
-app.post("/api/users",(req,res)=>{
-   
-    const {body}=req;
-    const newuser={id:usersp[usersp.length-1].id+1, ...body};
-
-    console.log(newuser);
-    usersp.push(newuser);
-    
-    return res.status(201).send(newuser);
-})
-
-
-
-app.put("/api/users/:id",getuIndexById,(req, res)=>{
-  const userindex=req.userindex;
-   const {body} = req;
-
-   usersp[userindex]= {id: id, ...body};
-   return res.status(201).send({msg: "user updated"})
-   
-})
-
-
-
-app.patch("/api/users/:id",getuIndexById,(req,res)=>{
-   const userindex=req.userindex;
-   const {body} = req;
-   usersp[userindex]={...usersp[userindex], ...body}
-    return res.sendStatus(200);
  
-})
-
-
-app.delete("/api/users/:id",getuIndexById, (req,res)=>{
-  const userindex=req.userindex;
-   usersp.splice(userindex,1);
-   res.sendStatus(200);
-
-})
-
-
-
 
 
 
