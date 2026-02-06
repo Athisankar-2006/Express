@@ -27,8 +27,17 @@ const port=3000;
 
 app.get("/",(req,res)=>{
     res.cookie("user","admin",{maxAge: 60000 *60, signed:true})
-    console.log(req.session);
+    
     console.log(req.session.id);
+
+    req.sessionStore.get(req.session.id,(err,sessionData)=>{
+        if(err){
+            console.log(err);
+        }
+        else{
+            console.log(sessionData);
+        }
+    })
     res.send({msg: "Root"})
 });
 
